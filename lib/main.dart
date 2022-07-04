@@ -22,12 +22,13 @@ class _HomeState extends State<Home> {
   Future<void> getData() async
   {
     List data=await DatabaseHelper.instance.queryAll();
-    for(int i=0;i<data.length;i++)
-      {
-        todo.add(data[i]);
-      }
+    data.forEach((element)
+    {
+      setState((){
 
-    print(todo);
+    todo.add(element);
+      });
+    });
 
   }
 
@@ -57,7 +58,7 @@ class _HomeState extends State<Home> {
                 todo.remove(data);
               });
             },
-                child: Icon(Icons.delete))
+                child: Icon(Icons.delete,color: Colors.brown,))
           ],
         ),
       ),
@@ -69,21 +70,19 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Todo'),
+        backgroundColor: Colors.brown,
       ),
       floatingActionButton: FloatingActionButton(onPressed: () async{
         String task=_todoController.text;
-
         //insert task
         await DatabaseHelper.instance.insert({
           DatabaseHelper.columntask:task,
         });
-        setState((){
           todo.clear();
-          getData();
-
-        });
-
+          await getData();
+          _todoController.text='';
       },
+        backgroundColor: Colors.brown,
         child: Icon(Icons.add),
       ),
       body: SingleChildScrollView(
@@ -92,13 +91,14 @@ class _HomeState extends State<Home> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
               TextField(
+                style: TextStyle(color: Colors.brown),
                 controller: _todoController,
                 decoration: InputDecoration(
                   labelText: 'Add TODO task',
-                  border:OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0)
-                  ),),
-            ),
+                  )
+                 ),
+
+            
             Column(
               children: todo.map((data) => todoCard(data)).toList(),
             )
